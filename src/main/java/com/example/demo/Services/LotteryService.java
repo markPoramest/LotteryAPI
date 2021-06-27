@@ -40,17 +40,17 @@ public class LotteryService {
     int month = 1;
     int year = 3000;
     Lotteries lotteries = new Lotteries();
-    lotteries.setDate(day +"/"+ month +"/"+ year);
+    lotteries.setDate(day + "/" + month + "/" + year);
     List<Reward> rewards = new ArrayList<>();
-    rewards.add(getPrize("รางวัลที่ 1",6_000_000,1, 6));
-    rewards.add(getPrize("รางวัลที่ 2",200_000,5, 6));
-    rewards.add(getPrize("รางวัลที่ 3",80_000,10, 6));
-    rewards.add(getPrize("รางวัลที่ 4",40_000,50, 6));
-    rewards.add(getPrize("รางวัลที่ 5",20_000,100, 6));
+    rewards.add(getPrize("รางวัลที่ 1", 6_000_000, 1, 6));
+    rewards.add(getPrize("รางวัลที่ 2", 200_000, 5, 6));
+    rewards.add(getPrize("รางวัลที่ 3", 80_000, 10, 6));
+    rewards.add(getPrize("รางวัลที่ 4", 40_000, 50, 6));
+    rewards.add(getPrize("รางวัลที่ 5", 20_000, 100, 6));
     rewards.add(sideFirstPrize(rewards.get(0)));
-    rewards.add(getPrize("รางวัลเลขหน้า 3 ตัว",4_000,2, 3));
-    rewards.add(getPrize("รางวัลเลขท้าย 3 ตัว",4_000,2, 3));
-    rewards.add(getPrize("รางวัลเลขท้าย 2 ตัว",2_000,1, 2));
+    rewards.add(getPrize("รางวัลเลขหน้า 3 ตัว", 4_000, 2, 3));
+    rewards.add(getPrize("รางวัลเลขท้าย 3 ตัว", 4_000, 2, 3));
+    rewards.add(getPrize("รางวัลเลขท้าย 2 ตัว", 2_000, 1, 2));
     lotteries.setRewards(rewards);
     return lotteries;
   }
@@ -60,26 +60,26 @@ public class LotteryService {
     sideFirstPrize.setName("รางวัลข้างเคียงรางวัลที่ 1");
     sideFirstPrize.setReward(100_000);
     String number = firstPrize.getNumbers().get(0);
-    int numberInt  = Integer.parseInt(number);
-    String side1 = String.valueOf(numberInt-1);
-    String side2 = String.valueOf(numberInt+1);
-    if(side1.length()!=6){
-      side1 =  ("000000" + side1).substring(side1.length());
-      side2 =  ("000000" + side2).substring(side2.length());
+    int numberInt = Integer.parseInt(number);
+    String side1 = String.valueOf(numberInt - 1);
+    String side2 = String.valueOf(numberInt + 1);
+    if (side1.length() != 6) {
+      side1 = ("000000" + side1).substring(side1.length());
+      side2 = ("000000" + side2).substring(side2.length());
     }
     List<String> reward = new ArrayList<>();
     reward.add(side1);
     reward.add(side2);
     sideFirstPrize.setNumbers(reward);
-    return  sideFirstPrize;
+    return sideFirstPrize;
   }
 
-  private Reward getPrize(String name, int reward, int round , int digit) {
+  private Reward getPrize(String name, int reward, int round, int digit) {
     Reward firstPrice = new Reward();
     firstPrice.setName(name);
     firstPrice.setReward(reward);
     firstPrice.setNumbers(randomGenerateNumber(round, digit));
-    return  firstPrice;
+    return firstPrice;
   }
 
   private List<String> randomGenerateNumber(int round, int digit) {
@@ -87,7 +87,7 @@ public class LotteryService {
     for (int j = 0; j < round; j++) {
       Random random = new Random();
       String number = "";
-      for (int i = 0; i <digit; i++) {
+      for (int i = 0; i < digit; i++) {
         int digits = random.nextInt(10);
         number += String.valueOf(digits);
       }
