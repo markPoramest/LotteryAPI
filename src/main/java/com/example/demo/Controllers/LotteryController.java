@@ -1,5 +1,6 @@
 package com.example.demo.Controllers;
 
+import com.example.demo.Models.Lotteries;
 import com.example.demo.Models.Lottery;
 import com.example.demo.Services.LotteryService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,11 @@ public class LotteryController {
     @GetMapping("/get")
     public Lottery getLottery() throws IOException {
         return lotteryService.getResultLottery();
+    }
+
+    @GetMapping("/getReward")
+    public Lotteries getLottery2() throws IOException {
+        return lotteryService.getLotteries();
     }
 
 }
