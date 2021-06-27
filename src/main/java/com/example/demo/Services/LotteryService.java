@@ -1,11 +1,7 @@
 package com.example.demo.Services;
 
-import com.example.demo.Models.Lotteries;
-import com.example.demo.Models.Lottery;
-import com.example.demo.Models.Reward;
+import com.example.demo.Models.*;
 import com.google.gson.Gson;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
-import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -35,10 +31,21 @@ public class LotteryService {
     return objOfYourClass;
   }
 
-  public Lotteries getLotteries() {
-    int day = 1;
-    int month = 1;
-    int year = 3000;
+  public Lotteries getLotteries(int i) {
+    int day = 0;
+    int j = i / 2;
+    int month = 0;
+    if (i % 2 != 0) {
+      day = 1;
+      month = (j + 1) % 12;
+    } else {
+      day = 16;
+      month = (j) % 12;
+    }
+    if (month == 0) {
+      month = 12;
+    }
+    int year = 3000 + ((j / 12) + 1);
     Lotteries lotteries = new Lotteries();
     lotteries.setDate(day + "/" + month + "/" + year);
     List<Reward> rewards = new ArrayList<>();
@@ -53,6 +60,137 @@ public class LotteryService {
     rewards.add(getPrize("รางวัลเลขท้าย 2 ตัว", 2_000, 1, 2));
     lotteries.setRewards(rewards);
     return lotteries;
+  }
+
+  public Person generatePerson() {
+    Person person = new Person();
+    person.setNumber(randomGenerateNumber(960, 6));
+    return person;
+  }
+
+  public PersonAndLottery generatePersonAndLottery() {
+    PersonAndLottery personAndLottery = new PersonAndLottery();
+    personAndLottery.setPerson(generatePerson());
+    List<Lotteries> lotteries = new ArrayList<>();
+    for (int i = 0; i < 960; i++) {
+      lotteries.add(getLotteries(i + 1));
+    }
+    personAndLottery.setLotteries(lotteries);
+    int amount = 0;
+    String won = "";
+    List<String> win = new ArrayList<>();
+    for (int i = 0; i < 960; i++) {
+      String number = personAndLottery.getPerson().getNumber().get(i);
+      Lotteries lotteries1 = personAndLottery.getLotteries().get(i);
+      amount += Integer.parseInt(checkAllLottery(number, lotteries1)[0].toString());
+      won=(checkAllLottery(number, lotteries1)[1].toString());
+      if(!won.isEmpty()){
+        win.add(won);
+      }
+    }
+    personAndLottery.getPerson().setMoney(amount);
+    personAndLottery.getPerson().setWon(win);
+    return personAndLottery;
+  }
+
+  private Object[] checkAllLottery(String number, Lotteries lotteries) {
+    Object[] objects = new Object[2];
+    int amount = 0;
+    int money = 0;
+    String won = "";
+    money = checkLottery(number, lotteries.getRewards().get(0), 6_000_000);
+    won += won(money, number, 0, lotteries.getDate());
+    amount += money;
+    money= checkLottery(number, lotteries.getRewards().get(1), 200_000);
+    won += won(money, number, 1, lotteries.getDate());
+    amount += money;
+    money= checkLottery(number, lotteries.getRewards().get(2), 80_000);
+    won += won(money, number, 2, lotteries.getDate());
+    amount += money;
+    money= checkLottery(number, lotteries.getRewards().get(3), 40_000);
+    won += won(money, number, 3, lotteries.getDate());
+    amount += money;
+    money= checkLottery(number, lotteries.getRewards().get(4), 20_000);
+    won += won(money, number, 4, lotteries.getDate());
+    amount += money;
+    money= checkLottery(number, lotteries.getRewards().get(5), 100_000);
+    won += won(money, number, 5, lotteries.getDate());
+    amount += money;
+    money= checkLotteryPreffix(number, lotteries.getRewards().get(6), 4_000);
+    won += won(money, number, 6, lotteries.getDate());
+    amount += money;
+    money= checkLotterySuffix(number, lotteries.getRewards().get(7), 4_000);
+    won += won(money, number, 7, lotteries.getDate());
+    amount += money;
+    money= checkLotterySuffix(number, lotteries.getRewards().get(8), 2_000);
+    won += won(money, number, 8, lotteries.getDate());
+    amount += money;
+    objects[0]  = amount;
+    objects[1] = won;
+    return objects;
+  }
+
+  private String won(int amount, String number, int prize, String date) {
+    String won = "";
+    if (amount != 0) {
+      if (prize == 0) {
+        won += "ถูกรางวัลที่ 1 หมายเลขที่ถูก " + number ;
+      } else if (prize == 1) {
+        won += "ถูกรางวัลที่ 2  หมายเลขที่ถูก " + number ;
+      } else if (prize == 2) {
+        won += "ถูกรางวัลที่ 3  หมายเลขที่ถูก " + number ;
+      } else if (prize == 3) {
+        won += "ถูกรางวัลที่ 4  หมายเลขที่ถูก " + number ;
+      } else if (prize == 4) {
+        won += "ถูกรางวัลที่ 5 หมายเลขที่ถูก " +  number ;
+      } else if (prize == 5) {
+        won += "ถูกรางวัลข้างเคียงรางวัลที่ 1 หมายเลขที่ถูก " + number ;
+      } else if (prize == 6) {
+        won += "ถูกรางวัลเลขหน้า 3 ตัว  หมายเลขที่ถูก " + number ;
+      } else if (prize == 7) {
+        won += "ถูกรางวัลเลขท้าย 3 ตัว หมายเลขที่ถูก " + number;
+      } else if (prize == 8) {
+        won += "ถูกรางวัลเลขท้าย 2 ตัว หมายเลขที่ถูก " + number ;
+      }
+      won+= " งวดวันที่ "+date;
+    }
+    return won;
+  }
+
+  private int checkLottery(String number, Reward reward, int prize) {
+    int amount = 0;
+    for (String num : reward.getNumbers()) {
+      if (num.equals(number)) {
+        amount += prize;
+      }
+    }
+    return amount;
+  }
+
+  private int checkLotteryPreffix(String number, Reward reward, int prize) {
+    int amount = 0;
+    for (String num : reward.getNumbers()) {
+      if (number.substring(0, 3).equals(num)) {
+        amount += prize;
+      }
+    }
+    return amount;
+  }
+
+  private int checkLotterySuffix(String number, Reward reward, int prize) {
+    int amount = 0;
+    for (String num : reward.getNumbers()) {
+      if (prize == 4_000) {
+        if (number.substring(3, 6).equals(num)) {
+          amount += prize;
+        }
+      } else {
+        if (number.substring(4, 6).equals(num)) {
+          amount += prize;
+        }
+      }
+    }
+    return amount;
   }
 
   private Reward sideFirstPrize(Reward firstPrize) {

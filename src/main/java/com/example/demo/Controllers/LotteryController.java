@@ -2,6 +2,7 @@ package com.example.demo.Controllers;
 
 import com.example.demo.Models.Lotteries;
 import com.example.demo.Models.Lottery;
+import com.example.demo.Models.PersonAndLottery;
 import com.example.demo.Services.LotteryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +24,9 @@ public class LotteryController {
         return lotteryService.getResultLottery();
     }
 
-    @GetMapping("/getReward")
-    public Lotteries getLottery2() throws IOException {
-        return lotteryService.getLotteries();
+    @GetMapping("/getAllReward")
+    public PersonAndLottery getAllLottery() throws IOException {
+        return lotteryService.generatePersonAndLottery();
     }
 
 }
